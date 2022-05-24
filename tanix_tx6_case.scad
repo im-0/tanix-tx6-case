@@ -25,7 +25,7 @@ FAN_SPACING = 8.0;  // mm
 // Distance between fan screw holes
 FAN_SCREW_HOLE_DIST = 71.5;  // mm
 // Diameter for fan screw holes (without fastening)
-FAN_SCREW_HOLE_DIAM = 4.5;  // mm
+FAN_SCREW_HOLE_DIAM = 5.5;  // mm
 
 // Airflow grill (bottom)
 BOTTOM_GRILL_HEIGHT = 0.6;  // mm
@@ -50,12 +50,12 @@ CASE_LEGS_HEIGHT = 15.0;  // mm
 CASE_LEGS_RADIUS = 10.0;  // mm
 // Distance between case screws
 CASE_SCREW_DIST = 87.0;  // mm
-// Diameter of case screws (seems to be 2mm, but printer's 2mm is too tight)
-CASE_SCREW_DIAM = 2.3;  // mm
+// Diameter of case screws with fastening (seems to be 2mm, but printer's 2mm is too tight)
+CASE_SCREW_DIAM = 2.8;  // mm
 // Diameter for case screws holes without fastening
-CASE_SCREW_SPACE_DIAM = 3.0;  // mm
+CASE_SCREW_SPACE_DIAM = 4.0;  // mm
 // Diameter of heads of case screws
-CASE_SCREW_HEAD_DIAM = 7.0;  // mm
+CASE_SCREW_HEAD_DIAM = 6.0;  // mm
 // Full length of case screws
 CASE_SCREW_LENGTH = 16.0;  // mm
 // Length of case screws that actually used
@@ -72,8 +72,8 @@ PCB_SUPPORT_HEIGHT = 3.5;  // mm
 PCB_SUPPORT_DIAM = 5.0;  // mm
 // Distance between PCB supports
 PCB_SUPPORT_DIST = 67.0;  // mm
-// Diameter of PCB screws (seems to be 1.5mm, but printers 1.5mm is too tight)
-PCB_SCREW_DIAM = 1.8;  // mm
+// Diameter of PCB screws with fastening (seems to be 1.5mm, but printers 1.5mm is too tight)
+PCB_SCREW_DIAM = 2.0;  // mm
 
 TOLERANCE = 0.1;  // mm
 
@@ -417,24 +417,34 @@ module bottom_part()
     }
 }
 
-// TODO: Uncomment.
-//translate([-CASE_WIDTH / 2.0 - 10.0, 0.0, 0.0])
-//    top_part();
-//translate([CASE_WIDTH / 2.0 + 10.0, 0.0, 0.0])
-//    bottom_part();
-linear_extrude(height=5.0) {
-    difference() {
-        square([50.0, 10.0], true);
+module screw_hole_calibration()
+{
+    linear_extrude(height=5.0) {
+        difference() {
+            square([50.0, 10.0], true);
 
-        translate([-18.0, 0.0])
-            circle(d=FAN_SCREW_HOLE_DIAM, $fn=32);
-        translate([-10.0, 0.0])
-            circle(d=CASE_SCREW_DIAM, $fn=32);
-        translate([0.0, 0.0])
-            circle(d=CASE_SCREW_SPACE_DIAM, $fn=32);
-        translate([10.0, 0.0])
-            circle(d=CASE_SCREW_HEAD_DIAM, $fn=32);
-        translate([20.0, 0.0])
-            circle(d=PCB_SCREW_DIAM, $fn=32);
+            // Fan screws should NOT screw into plastic here:
+            translate([-18.0, 0.0])
+                circle(d=FAN_SCREW_HOLE_DIAM, $fn=32);
+            // Case screws should screw into plastic here:
+            translate([-10.0, 0.0])
+                circle(d=CASE_SCREW_DIAM, $fn=32);
+            // Case screws should NOT screw into plastic here:
+            translate([0.0, 0.0])
+                circle(d=CASE_SCREW_SPACE_DIAM, $fn=32);
+            // Case screws should fall through this hole:
+            translate([10.0, 0.0])
+                circle(d=CASE_SCREW_HEAD_DIAM, $fn=32);
+            // PCB screws should screw into plastic here:
+            translate([20.0, 0.0])
+                circle(d=PCB_SCREW_DIAM, $fn=32);
+        }
     }
 }
+
+translate([-CASE_WIDTH / 2.0 - 10.0, 0.0, 0.0])
+    top_part();
+translate([CASE_WIDTH / 2.0 + 10.0, 0.0, 0.0])
+    bottom_part();
+translate([0.0, -CASE_WIDTH / 2.0 - 20.0, 0.0])
+    screw_hole_calibration();

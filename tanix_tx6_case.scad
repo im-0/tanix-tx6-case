@@ -53,9 +53,9 @@ CASE_SCREW_DIST = 87.5;  // mm
 // Diameter of case screws with fastening (seems to be 2mm, but printer's 2mm is too tight)
 CASE_SCREW_DIAM = 2.8;  // mm
 // Diameter for case screws holes without fastening
-CASE_SCREW_SPACE_DIAM = 4.0;  // mm
+CASE_SCREW_HOLE_DIAM = 4.0;  // mm
 // Diameter of heads of case screws
-CASE_SCREW_HEAD_DIAM = 6.0;  // mm
+CASE_SCREW_HEAD_HOLE_DIAM = 6.0;  // mm
 // Full length of case screws
 CASE_SCREW_LENGTH = 16.0;  // mm
 // Length of case screws that actually used
@@ -408,7 +408,7 @@ module bottom_part()
             linear_extrude(height=screw_space_len + OS + OA) {
                 for (xy = case_screw_hole_coords()) {
                     translate(xy)
-                        circle(d=CASE_SCREW_SPACE_DIAM, $fn=32);
+                        circle(d=CASE_SCREW_HOLE_DIAM, $fn=32);
                 }
             }
         }
@@ -419,10 +419,10 @@ module bottom_part()
                 for (xy = case_screw_hole_coords()) {
                     hull() {
                         translate(xy)
-                            circle(d=CASE_SCREW_HEAD_DIAM, $fn=32);
+                            circle(d=CASE_SCREW_HEAD_HOLE_DIAM, $fn=32);
                         // Extend to outside
                         translate(xy * 2)
-                            circle(d=CASE_SCREW_HEAD_DIAM * 10, $fn=32);
+                            circle(d=CASE_SCREW_HEAD_HOLE_DIAM * 10, $fn=32);
                     }
                 }
             }
@@ -444,10 +444,10 @@ module screw_hole_calibration()
                 circle(d=CASE_SCREW_DIAM, $fn=32);
             // Case screws should NOT screw into plastic here:
             translate([0.0, 0.0])
-                circle(d=CASE_SCREW_SPACE_DIAM, $fn=32);
+                circle(d=CASE_SCREW_HOLE_DIAM, $fn=32);
             // Case screws should fall through this hole:
             translate([10.0, 0.0])
-                circle(d=CASE_SCREW_HEAD_DIAM, $fn=32);
+                circle(d=CASE_SCREW_HEAD_HOLE_DIAM, $fn=32);
             // PCB screws should screw into plastic here:
             translate([20.0, 0.0])
                 circle(d=PCB_SCREW_DIAM, $fn=32);

@@ -89,7 +89,7 @@ module case_2d_projection(wall_adj)
     hull() {
         for (x_off = [-1.0, 1.0], y_off = [-1.0, 1.0]) {
             translate([x_off, y_off] * off)
-                circle(d=diam, $fn=64);
+                circle(d=diam, $fn=128);
         }
     }
 }
@@ -101,7 +101,7 @@ module bottom_supports_2d(r, wall_adj)
         off = CASE_STRAIGHT_WIDTH / 2.0 + sqrt(2.0) * case_diam / 4.0;  // sin(45°) == sqrt(2)/2
         for (x_off = [-1.0, 1.0], y_off = [-1.0, 1.0]) {
             translate([x_off, y_off] * off)
-                circle(r, $fn=64);
+                circle(r, $fn=128);
         }
 
         case_2d_projection(wall_adj);
@@ -379,7 +379,7 @@ module bottom_part()
         // Make grill thinner.
         translate([0.0, 0.0, BOTTOM_GRILL_HEIGHT]) {
             linear_extrude(height=CASE_BOTTOM_HEIGHT - BOTTOM_GRILL_HEIGHT + OS)
-                circle(d=FAN_DIAM, $fn=128);
+                circle(d=FAN_DIAM, $fn=256);
         }
 
         // Make space for heads of fan mounting screws

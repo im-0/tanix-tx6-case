@@ -153,7 +153,7 @@ module front_ports_2d(through_hole) {
             circle(d = 6.5, $fn = 64);
     } else {
         translate([15.0, 13.5])
-            square([8.0, 18.0], true);
+            square([7.5, 18.0], true);
     }
     // HDMI connector.
     translate([22.0 - adj, 7.0 - adj])

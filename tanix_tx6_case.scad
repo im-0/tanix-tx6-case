@@ -83,7 +83,7 @@ OA = 0.01;  // mm
 module case_2d_projection(wall_adj)
 {
     diam = CASE_WIDTH - CASE_STRAIGHT_WIDTH + wall_adj * 2;
-    off = CASE_STRAIGHT_WIDTH / 2.0;
+    off = CASE_STRAIGHT_WIDTH / 2;
     hull() {
         for (x_off = [-1.0, 1.0], y_off = [-1.0, 1.0]) {
             translate([x_off, y_off] * off)
@@ -96,7 +96,7 @@ module bottom_supports_2d(r, wall_adj)
 {
     intersection() {
         case_diam = CASE_WIDTH - CASE_STRAIGHT_WIDTH;
-        off = CASE_STRAIGHT_WIDTH / 2.0 + sqrt(2.0) * case_diam / 4.0;  // sin(45°) == sqrt(2)/2
+        off = CASE_STRAIGHT_WIDTH / 2 + sqrt(2) * case_diam / 4;  // sin(45°) == sqrt(2)/2
         for (x_off = [-1.0, 1.0], y_off = [-1.0, 1.0]) {
             translate([x_off, y_off] * off)
                 circle(r, $fn=128);
@@ -185,7 +185,7 @@ module right_ports_2d()
         square([16.0, 5.0]);
 }
 
-function case_screw_hole_coords() = let(half_off = CASE_SCREW_DIST / 2.0) [
+function case_screw_hole_coords() = let(half_off = CASE_SCREW_DIST / 2) [
 	for (x_off = [-1.0, 1.0], y_off = [-1.0, 1.0])
 		[x_off * half_off, y_off * half_off, 0.0]
 ];
@@ -216,7 +216,7 @@ module top_part()
 
         // Front side ports.
         rotate([90.0]) {
-            translate([-CASE_WIDTH / 2.0, 0.0, -OS]) {
+            translate([-CASE_WIDTH / 2, 0.0, -OS]) {
                 linear_extrude(height=CASE_WIDTH)
                     front_ports_2d();
             }
@@ -224,7 +224,7 @@ module top_part()
 
         // Left side ports.
         rotate([90.0, 0.0, -90.0]) {
-            translate([-CASE_WIDTH / 2.0, 0.0, -OS]) {
+            translate([-CASE_WIDTH / 2, 0.0, -OS]) {
                 linear_extrude(height=CASE_WIDTH)
                     left_ports_2d();
             }
@@ -232,7 +232,7 @@ module top_part()
 
         // Right side ports.
         rotate([90.0, 0.0, 90.0]) {
-            translate([-CASE_WIDTH / 2.0, 0.0, -OS]) {
+            translate([-CASE_WIDTH / 2, 0.0, -OS]) {
                 linear_extrude(height=CASE_WIDTH)
                     right_ports_2d();
             }
@@ -281,7 +281,7 @@ module hex(width)
 }
 
 // Depth is over the "y" axis.
-function hex_depth(width) = sqrt(3.0) / 2.0 * width;
+function hex_depth(width) = sqrt(3) / 2 * width;
 
 // Sum of 2D cubic coordinates.
 function hex_cc_sum(a, b) = [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
@@ -300,12 +300,12 @@ function hex_cc_direction(direction) = [
 function hex_cc_neighbor(cc, direction) = hex_cc_sum(cc, hex_cc_direction(direction));
 
 // Convert cubic 2D coordinates to [col, row] (even-col is without offset over "y" axis).
-function hex_cc_to_off(cc) = [cc[0], cc[2] + (cc[0] - cc[0] % 2) / 2.0];
+function hex_cc_to_off(cc) = [cc[0], cc[2] + (cc[0] - cc[0] % 2) / 2];
 
 // Convert [col, row] (even-col) to normal [x, y] 2D coordinates.
 function hex_off_to_xy(off, width) = [
-	off[0] * width * 3.0 / 4.0,
-	off[1] * hex_depth(width) + off[0] % 2 * hex_depth(width) / 2.0,
+	off[0] * width * 3 / 4,
+	off[1] * hex_depth(width) + off[0] % 2 * hex_depth(width) / 2,
 ];
 
 // Convert cubic 2D coordinates to normal [x, y] 2D coordinates.
@@ -343,10 +343,10 @@ function hex_cc_spiral(center_cc, radius) = hex_cc_spiral_tail([center_cc], radi
 function hex_circle(width, radius) = [
 	for (i = hex_cc_spiral([0, 0, 0], ceil(radius / (width * 1.5) * 2)))
 		let (xy = hex_cc_to_xy(i, width))
-			if (norm(xy) < radius - width / 2.0) xy
+			if (norm(xy) < radius - width / 2) xy
 ];
 
-function fan_screw_hole_coords() = let(half_off = FAN_SCREW_HOLE_DIST / 2.0) [
+function fan_screw_hole_coords() = let(half_off = FAN_SCREW_HOLE_DIST / 2) [
 	for (x_off = [-1.0, 1.0], y_off = [-1.0, 1.0])
 		[x_off * half_off, y_off * half_off, 0.0]
 ];
@@ -361,7 +361,7 @@ module bottom_part_no_holes()
 
             // Holes for airflow.
             full_hex_width = BOTTOM_GRILL_HOLE_WIDTH + BOTTOM_GRILL_HOLE_SPACING;
-            for (xy = hex_circle(full_hex_width, FAN_DIAM / 2.0)) {
+            for (xy = hex_circle(full_hex_width, FAN_DIAM / 2)) {
                 translate(xy)
                     hex(BOTTOM_GRILL_HOLE_WIDTH);
             }
@@ -454,9 +454,9 @@ module screw_hole_calibration()
     }
 }
 
-translate([-CASE_WIDTH / 2.0 - 10.0, 0.0, 0.0])
+translate([-CASE_WIDTH / 2 - 10.0, 0.0, 0.0])
     top_part();
-translate([CASE_WIDTH / 2.0 + 10.0, 0.0, 0.0])
+translate([CASE_WIDTH / 2 + 10.0, 0.0, 0.0])
     bottom_part();
-translate([0.0, -CASE_WIDTH / 2.0 - 20.0, 0.0])
+translate([0.0, -CASE_WIDTH / 2 - 20.0, 0.0])
     screw_hole_calibration();

@@ -319,7 +319,7 @@ module top_part()
         }
 
         // Airflow grill - left, front and right.
-        grill_h = CASE_TOP_HEIGHT * 0.65;
+        grill_h = CASE_TOP_HEIGHT * 0.60;
         for (a = [-90.0, 0.0, 90.0]) {
             translate([0.0, 0.0, WALL_THICKNESS + CASE_TOP_HEIGHT - grill_h]) {
                 rotate([0.0, 0.0, a])

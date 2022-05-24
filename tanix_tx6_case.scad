@@ -24,6 +24,7 @@ FAN_DIAM = 77.0;  // mm
 FAN_SPACING = 8.0;  // mm
 // Distance between fan screw holes
 FAN_SCREW_HOLE_DIST = 71.5;  // mm
+// Diameter for fan screw holes (without fastening)
 FAN_SCREW_HOLE_DIAM = 4.5;  // mm
 
 // Airflow grill (bottom)
@@ -49,9 +50,9 @@ CASE_LEGS_HEIGHT = 15.0;  // mm
 CASE_LEGS_RADIUS = 10.0;  // mm
 // Distance between case screws
 CASE_SCREW_DIST = 87.0;  // mm
-// Diameter of case screws
-CASE_SCREW_DIAM = 2.0;  // mm
-// Diameter for case screws without fastening
+// Diameter of case screws (seems to be 2mm, but printer's 2mm is too tight)
+CASE_SCREW_DIAM = 2.3;  // mm
+// Diameter for case screws holes without fastening
 CASE_SCREW_SPACE_DIAM = 3.0;  // mm
 // Diameter of heads of case screws
 CASE_SCREW_HEAD_DIAM = 7.0;  // mm
@@ -71,8 +72,8 @@ PCB_SUPPORT_HEIGHT = 3.5;  // mm
 PCB_SUPPORT_DIAM = 5.0;  // mm
 // Distance between PCB supports
 PCB_SUPPORT_DIST = 67.0;  // mm
-// Diameter of PCB screws
-PCB_SCREW_DIAM = 1.5;  // mm
+// Diameter of PCB screws (seems to be 1.5mm, but printers 1.5mm is too tight)
+PCB_SCREW_DIAM = 1.8;  // mm
 
 TOLERANCE = 0.1;  // mm
 
@@ -416,7 +417,24 @@ module bottom_part()
     }
 }
 
-translate([-CASE_WIDTH / 2.0 - 10.0, 0.0, 0.0])
-    top_part();
-translate([CASE_WIDTH / 2.0 + 10.0, 0.0, 0.0])
-    bottom_part();
+// TODO: Uncomment.
+//translate([-CASE_WIDTH / 2.0 - 10.0, 0.0, 0.0])
+//    top_part();
+//translate([CASE_WIDTH / 2.0 + 10.0, 0.0, 0.0])
+//    bottom_part();
+linear_extrude(height=5.0) {
+    difference() {
+        square([50.0, 10.0], true);
+
+        translate([-18.0, 0.0])
+            circle(d=FAN_SCREW_HOLE_DIAM, $fn=32);
+        translate([-10.0, 0.0])
+            circle(d=CASE_SCREW_DIAM, $fn=32);
+        translate([0.0, 0.0])
+            circle(d=CASE_SCREW_SPACE_DIAM, $fn=32);
+        translate([10.0, 0.0])
+            circle(d=CASE_SCREW_HEAD_DIAM, $fn=32);
+        translate([20.0, 0.0])
+            circle(d=PCB_SCREW_DIAM, $fn=32);
+    }
+}

@@ -47,9 +47,9 @@ CASE_BOTTOM_HEIGHT = 4.0;  // mm
 // Height of legs on bottom part
 CASE_LEGS_HEIGHT = 15.0;  // mm
 // Radius of legs on bottom part
-CASE_LEGS_RADIUS = 10.0;  // mm
+CASE_LEGS_RADIUS = 11.0;  // mm
 // Distance between case screws
-CASE_SCREW_DIST = 87.0;  // mm
+CASE_SCREW_DIST = 87.5;  // mm
 // Diameter of case screws with fastening (seems to be 2mm, but printer's 2mm is too tight)
 CASE_SCREW_DIAM = 2.8;  // mm
 // Diameter for case screws holes without fastening
@@ -84,9 +84,7 @@ OA = 0.01;  // mm
 
 module case_2d_projection(wall_adj)
 {
-    // TODO: Wall should be thicker:
-    // diam = CASE_WIDTH - CASE_STRAIGHT_WIDTH + wall_adj * 2;
-    diam = CASE_WIDTH - CASE_STRAIGHT_WIDTH + wall_adj;
+    diam = CASE_WIDTH - CASE_STRAIGHT_WIDTH + wall_adj * 2;
     off = CASE_STRAIGHT_WIDTH / 2.0;
     hull() {
         for (x_off = [-1.0, 1.0], y_off = [-1.0, 1.0]) {
@@ -409,8 +407,13 @@ module bottom_part()
         translate([0.0, 0.0, screw_space_len]) {
             linear_extrude(height=CASE_BOTTOM_HEIGHT + CASE_LEGS_HEIGHT - screw_space_len + OS) {
                 for (xy = case_screw_hole_coords()) {
-                    translate(xy)
-                        circle(d=CASE_SCREW_HEAD_DIAM, $fn=32);
+                    hull() {
+                        translate(xy)
+                            circle(d=CASE_SCREW_HEAD_DIAM, $fn=32);
+                        // Extend to outside
+                        translate(xy * 2)
+                            circle(d=CASE_SCREW_HEAD_DIAM * 10, $fn=32);
+                    }
                 }
             }
         }

@@ -140,49 +140,75 @@ module top_part_no_holes()
     }
 }
 
-module front_ports_2d() {
+module front_ports_2d(through_hole) {
+    adj = through_hole? 0.0 : 3.0;
+    adj2 = adj * 2;
+    // Smaller adjustment to not cut through horizontal wall.
+    adj_small = through_hole? 0.0 : 1.0;
+    adj_small2 = adj + adj_small;
+
     // Power connector.
-    translate([15.0, 13.5])
-        circle(d=6.5, $fn=64);
+    if (through_hole) {
+        translate([15.0, 13.5])
+            circle(d = 6.5, $fn = 64);
+    } else {
+        translate([15.0, 13.5])
+            square([8.0, 18.0], true);
+    }
     // HDMI connector.
-    translate([22.0, 7.0])
-        square([17.0, 7.0]);
+    translate([22.0 - adj, 7.0 - adj])
+        square([17.0 + adj2, 7.0 + adj2]);
     // Ethernet connector.
-    translate([43.0, 4.5])
-        square([16.0, 11.0]);
+    translate([43.0 - adj, 4.5 - adj_small])
+        square([16.0 + adj2, 11.0 + adj_small2]);
     // Two USB 2.0 connectors.
-    translate([64.0, 3.5])
-        square([15.0, 7.0]);
-    translate([64.0, 12.5])
-        square([15.0, 7.0]);
+    translate([64.0 - adj, 3.5 - adj_small])
+        square([15.0 + adj2, 7.0 + adj_small2]);
+    translate([64.0 - adj, 12.5 - adj])
+        square([15.0 + adj2, 7.0 + adj2]);
     // Reset button.
-    translate([81.0, 9.3])
-        circle(d=1.5, $fn=32);
+    if (through_hole) {
+        translate([81.0, 9.3])
+            circle(d = 1.5, $fn = 32);
+    }
     // SPDIF connector.
-    translate([87.0, 9.5])
-        circle(d=5.5, $fn=64);
+    if (through_hole) {
+        translate([87.0, 9.5])
+            circle(d = 5.5, $fn = 64);
+    } else {
+        translate([87.0, 9.5])
+            square(8.0, true);
+    }
 }
 
-module left_ports_2d()
+module left_ports_2d(through_hole)
 {
+    adj = through_hole? 0.0 : 3.0;
+    adj2 = adj * 2;
+
     // USB 3.0 connector.
-    translate([58.5, 7.5])
-        square([15.5, 7.5]);
+    translate([58.5 - adj, 7.5 - adj])
+        square([15.5 + adj2, 7.5 + adj2]);
     // WiFi connector.
-    translate([83.5, 13.0]) {
-        intersection() {
-            translate([0.0, -1.2])
-                square(8.0, true);
-            circle(d=6.5, $fn=64);
+    if (through_hole) {
+        translate([83.5, 13.0]) {
+            intersection() {
+                translate([0.0, - 1.2])
+                    square(8.0, true);
+                circle(d = 6.5, $fn = 64);
+            }
         }
     }
 }
 
-module right_ports_2d()
+module right_ports_2d(through_hole)
 {
+    adj = through_hole? 0.0 : 3.0;
+    adj2 = adj * 2;
+
     // MicroSD card slot.
-    translate([30.0, 7.0])
-        square([16.0, 5.0]);
+    translate([30.0 - adj, 7.0 - adj])
+        square([16.0 + adj2, 5.0 + adj2]);
 }
 
 function case_screw_hole_coords() = let(half_off = CASE_SCREW_DIST / 2) [
@@ -214,27 +240,32 @@ module top_part()
     difference() {
         top_part_no_holes();
 
-        // Front side ports.
-        rotate([90.0]) {
-            translate([-CASE_WIDTH / 2, 0.0, -OS]) {
-                linear_extrude(height=CASE_WIDTH)
-                    front_ports_2d();
-            }
-        }
+        for (through_hole = [false, true]) {
+            eh = through_hole? WALL_THICKNESS + OS * 2 : WALL_THICKNESS / 2 + OS;
+            dz = through_hole? CASE_WIDTH / 2 - WALL_THICKNESS - OS : CASE_WIDTH / 2 - WALL_THICKNESS - OS;
 
-        // Left side ports.
-        rotate([90.0, 0.0, -90.0]) {
-            translate([-CASE_WIDTH / 2, 0.0, -OS]) {
-                linear_extrude(height=CASE_WIDTH)
-                    left_ports_2d();
+            // Front side ports.
+            rotate([90.0]) {
+                translate([- CASE_WIDTH / 2, 0.0, dz]) {
+                    linear_extrude(height = eh)
+                        front_ports_2d(through_hole);
+                }
             }
-        }
 
-        // Right side ports.
-        rotate([90.0, 0.0, 90.0]) {
-            translate([-CASE_WIDTH / 2, 0.0, -OS]) {
-                linear_extrude(height=CASE_WIDTH)
-                    right_ports_2d();
+            // Left side ports.
+            rotate([90.0, 0.0, - 90.0]) {
+                translate([- CASE_WIDTH / 2, 0.0, dz]) {
+                    linear_extrude(height = eh)
+                        left_ports_2d(through_hole);
+                }
+            }
+
+            // Right side ports.
+            rotate([90.0, 0.0, 90.0]) {
+                translate([- CASE_WIDTH / 2, 0.0, dz]) {
+                    linear_extrude(height = eh)
+                        right_ports_2d(through_hole);
+                }
             }
         }
 

@@ -63,6 +63,9 @@ WALL_THICKNESS = 2.5;  // mm
 
 // Size of supports inside the top part
 BOTTOM_SUPPORT_RADIUS = 7.0;  // mm
+// Size of thick supports inside the top part
+BOTTOM_SUPPORT_THICK_RADIUS = 8.5;  // mm
+BOTTOM_SUPPORT_THICKENING_HEIGHT = 5.0;  // mm
 
 // Height of PCB supports
 PCB_SUPPORT_HEIGHT = 3.5;  // mm
@@ -72,6 +75,8 @@ PCB_SUPPORT_DIAM = 5.0;  // mm
 PCB_SUPPORT_DIST = 67.0;  // mm
 // Diameter of PCB screws with fastening (seems to be 1.5mm, but printers 1.5mm is too tight)
 PCB_SCREW_DIAM = 2.0;  // mm
+// Maximum PCB height, including PCB supports.
+MAX_PCB_HEIGHT = 18.0;  // mm
 
 TOLERANCE = 0.1;  // mm
 
@@ -92,17 +97,20 @@ module case_2d_projection(wall_adj)
     }
 }
 
-module bottom_supports_2d(r, wall_adj)
+module bottom_supports(h, r1, r2, wall_adj)
 {
+    case_diam = CASE_WIDTH - CASE_STRAIGHT_WIDTH;
+    off = CASE_STRAIGHT_WIDTH / 2 + sqrt(2) * case_diam / 4;  // sin(45°) == sqrt(2)/2
     intersection() {
-        case_diam = CASE_WIDTH - CASE_STRAIGHT_WIDTH;
-        off = CASE_STRAIGHT_WIDTH / 2 + sqrt(2) * case_diam / 4;  // sin(45°) == sqrt(2)/2
-        for (x_off = [-1.0, 1.0], y_off = [-1.0, 1.0]) {
+        for (x_off = [- 1.0, 1.0], y_off = [- 1.0, 1.0]) {
             translate([x_off, y_off] * off)
-                circle(r, $fn=128);
+                cylinder(h = h, r1 = r1, r2 = r2, $fn=128);
         }
 
-        case_2d_projection(wall_adj);
+        translate([0.0, 0.0, -OS]) {
+            linear_extrude(h + OS * 2)
+                case_2d_projection(wall_adj);
+        }
     }
 }
 
@@ -124,10 +132,24 @@ module top_part_no_holes()
     }
 
     // Bottom supports.
-    translate([0.0, 0.0, OA]) {
-        linear_extrude(height=CASE_TOP_HEIGHT - OA)
-            bottom_supports_2d(BOTTOM_SUPPORT_RADIUS, -OA);
-    }
+    translate([0.0, 0.0, WALL_THICKNESS - OA])
+        bottom_supports(
+            MAX_PCB_HEIGHT + OA,
+            BOTTOM_SUPPORT_RADIUS,
+            BOTTOM_SUPPORT_RADIUS,
+            -OA);
+    translate([0.0, 0.0, WALL_THICKNESS + MAX_PCB_HEIGHT - OA])
+        bottom_supports(
+            BOTTOM_SUPPORT_THICKENING_HEIGHT + OA * 2,
+            BOTTOM_SUPPORT_RADIUS,
+            BOTTOM_SUPPORT_THICK_RADIUS,
+            -OA);
+    translate([0.0, 0.0, WALL_THICKNESS + MAX_PCB_HEIGHT + BOTTOM_SUPPORT_THICKENING_HEIGHT])
+        bottom_supports(
+            CASE_TOP_HEIGHT - WALL_THICKNESS - MAX_PCB_HEIGHT - BOTTOM_SUPPORT_THICKENING_HEIGHT - OA,
+            BOTTOM_SUPPORT_THICK_RADIUS,
+            BOTTOM_SUPPORT_THICK_RADIUS,
+            -OA);
 
     // PCB supports.
     translate([0.0, 0.0, WALL_THICKNESS - OA]) {
@@ -285,8 +307,10 @@ module top_part()
         }
 
         // Holes for case screws.
-        translate([0.0, 0.0, CASE_TOP_HEIGHT / 2]) {
-            linear_extrude(height=CASE_TOP_HEIGHT / 2 + OS) {
+        case_screw_dz = WALL_THICKNESS + MAX_PCB_HEIGHT + BOTTOM_SUPPORT_THICKENING_HEIGHT;
+        case_screw_h = CASE_TOP_HEIGHT - WALL_THICKNESS - MAX_PCB_HEIGHT - BOTTOM_SUPPORT_THICKENING_HEIGHT + OS;
+        translate([0.0, 0.0, case_screw_dz]) {
+            linear_extrude(case_screw_h) {
                 for (xy = case_screw_hole_coords()) {
                     translate(xy)
                         circle(d=CASE_SCREW_DIAM, $fn=64);
@@ -411,10 +435,8 @@ module bottom_part_no_holes()
     }
 
     // Legs.
-    translate([0.0, 0.0, CASE_BOTTOM_HEIGHT - OA]) {
-        linear_extrude(height=CASE_LEGS_HEIGHT + OA)
-            bottom_supports_2d(CASE_LEGS_RADIUS, -WALL_THICKNESS - TOLERANCE);
-    }
+    translate([0.0, 0.0, CASE_BOTTOM_HEIGHT - OA])
+        bottom_supports(CASE_LEGS_HEIGHT + OA, CASE_LEGS_RADIUS, CASE_LEGS_RADIUS, -WALL_THICKNESS - TOLERANCE);
 }
 
 module bottom_part()

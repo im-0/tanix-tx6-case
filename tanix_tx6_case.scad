@@ -152,7 +152,9 @@ module front_ports_2d() {
         square([16.0, 11.0]);
     // Two USB 2.0 connectors.
     translate([64.0, 3.5])
-        square([15.0, 16.0]);
+        square([15.0, 7.0]);
+    translate([64.0, 12.5])
+        square([15.0, 7.0]);
     // Reset button.
     translate([81.0, 9.3])
         circle(d=1.5, $fn=32);

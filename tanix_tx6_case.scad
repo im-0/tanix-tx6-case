@@ -232,7 +232,7 @@ module top_grill(h, n_vert)
                 for (ih = [0 : n_horiz - 1]) {
                     translate([
                             ih * TOP_GRILL_HOLE_WIDTH * 2 - grill_width / 2,
-                            -CASE_WIDTH / 2 - WALL_THICKNESS + OS])
+                            -CASE_WIDTH / 2 - OS])
                         square([TOP_GRILL_HOLE_WIDTH, WALL_THICKNESS + OS * 2]);
                 }
             }

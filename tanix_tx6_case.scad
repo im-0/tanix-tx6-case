@@ -56,10 +56,8 @@ CASE_SCREW_DIAM = 2.8;  // mm
 CASE_SCREW_HOLE_DIAM = 4.0;  // mm
 // Diameter of heads of case screws
 CASE_SCREW_HEAD_HOLE_DIAM = 6.0;  // mm
-// Full length of case screws
-CASE_SCREW_LENGTH = 16.0;  // mm
-// Length of case screws that actually used
-CASE_SCREW_FASTENING_LENGTH = 5.0;  // mm
+// Adjustment of unused length of case screws, if your screws are too long
+CASE_SCREW_UNUSED_LENGTH_ADJ = 4.0;  // mm
 // Case wall thickness
 WALL_THICKNESS = 2.5;  // mm
 
@@ -249,8 +247,8 @@ module top_part()
         }
 
         // Holes for case screws.
-        translate([0.0, 0.0, CASE_TOP_HEIGHT - CASE_SCREW_FASTENING_LENGTH - TOLERANCE]) {
-            linear_extrude(height=CASE_SCREW_FASTENING_LENGTH + TOLERANCE + OS) {
+        translate([0.0, 0.0, CASE_TOP_HEIGHT / 2]) {
+            linear_extrude(height=CASE_TOP_HEIGHT / 2 + OS) {
                 for (xy = case_screw_hole_coords()) {
                     translate(xy)
                         circle(d=CASE_SCREW_DIAM, $fn=32);
@@ -403,9 +401,8 @@ module bottom_part()
         }
 
         // Holes for case screws.
-        screw_space_len = CASE_SCREW_LENGTH - CASE_SCREW_FASTENING_LENGTH;
         translate([0.0, 0.0, -OS]) {
-            linear_extrude(height=screw_space_len + OS + OA) {
+            linear_extrude(height=CASE_BOTTOM_HEIGHT + CASE_LEGS_HEIGHT + OS * 2) {
                 for (xy = case_screw_hole_coords()) {
                     translate(xy)
                         circle(d=CASE_SCREW_HOLE_DIAM, $fn=32);
@@ -414,8 +411,8 @@ module bottom_part()
         }
 
         // Holes for heads of case screws.
-        translate([0.0, 0.0, screw_space_len]) {
-            linear_extrude(height=CASE_BOTTOM_HEIGHT + CASE_LEGS_HEIGHT - screw_space_len + OS) {
+        translate([0.0, 0.0, CASE_BOTTOM_HEIGHT + CASE_SCREW_UNUSED_LENGTH_ADJ]) {
+            linear_extrude(height=CASE_LEGS_HEIGHT - CASE_SCREW_UNUSED_LENGTH_ADJ + OS) {
                 for (xy = case_screw_hole_coords()) {
                     hull() {
                         translate(xy)

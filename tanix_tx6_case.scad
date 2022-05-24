@@ -166,7 +166,7 @@ module front_ports_2d(through_hole) {
         square([15.0 + adj2, 7.0 + adj_small2]);
     translate([64.0 - adj, 12.5 - adj])
         square([15.0 + adj2, 7.0 + adj2]);
-    // Reset button.
+    // Button.
     if (through_hole) {
         translate([81.0, 9.3])
             circle(d = 1.5, $fn = 32);
@@ -206,6 +206,11 @@ module right_ports_2d(through_hole)
     adj = through_hole? 0.0 : 3.0;
     adj2 = adj * 2;
 
+    // Button.
+    if (through_hole) {
+        translate([26.5, 9.3])
+            circle(d = 1.5, $fn = 32);
+    }
     // MicroSD card slot.
     translate([30.0 - adj, 7.0 - adj])
         square([16.0 + adj2, 5.0 + adj2]);

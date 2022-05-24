@@ -413,7 +413,7 @@ module bottom_part()
             }
         }
 
-        // Homes for heads of case screws.
+        // Holes for heads of case screws.
         translate([0.0, 0.0, screw_space_len]) {
             linear_extrude(height=CASE_BOTTOM_HEIGHT + CASE_LEGS_HEIGHT - screw_space_len + OS) {
                 for (xy = case_screw_hole_coords()) {

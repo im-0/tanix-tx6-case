@@ -251,7 +251,7 @@ module top_part()
             linear_extrude(height=CASE_TOP_HEIGHT / 2 + OS) {
                 for (xy = case_screw_hole_coords()) {
                     translate(xy)
-                        circle(d=CASE_SCREW_DIAM, $fn=32);
+                        circle(d=CASE_SCREW_DIAM, $fn=64);
                 }
             }
         }
@@ -405,7 +405,7 @@ module bottom_part()
             linear_extrude(height=CASE_BOTTOM_HEIGHT + CASE_LEGS_HEIGHT + OS * 2) {
                 for (xy = case_screw_hole_coords()) {
                     translate(xy)
-                        circle(d=CASE_SCREW_HOLE_DIAM, $fn=32);
+                        circle(d=CASE_SCREW_HOLE_DIAM, $fn=64);
                 }
             }
         }
@@ -416,10 +416,10 @@ module bottom_part()
                 for (xy = case_screw_hole_coords()) {
                     hull() {
                         translate(xy)
-                            circle(d=CASE_SCREW_HEAD_HOLE_DIAM, $fn=32);
+                            circle(d=CASE_SCREW_HEAD_HOLE_DIAM, $fn=64);
                         // Extend to outside
                         translate(xy * 2)
-                            circle(d=CASE_SCREW_HEAD_HOLE_DIAM * 10, $fn=32);
+                            circle(d=CASE_SCREW_HEAD_HOLE_DIAM * 10, $fn=64);
                     }
                 }
             }
@@ -435,19 +435,19 @@ module screw_hole_calibration()
 
             // Fan screws should NOT screw into plastic here:
             translate([-18.0, 0.0])
-                circle(d=FAN_SCREW_HOLE_DIAM, $fn=32);
+                circle(d=FAN_SCREW_HOLE_DIAM, $fn=64);
             // Case screws should screw into plastic here:
             translate([-10.0, 0.0])
-                circle(d=CASE_SCREW_DIAM, $fn=32);
+                circle(d=CASE_SCREW_DIAM, $fn=64);
             // Case screws should NOT screw into plastic here:
             translate([0.0, 0.0])
-                circle(d=CASE_SCREW_HOLE_DIAM, $fn=32);
+                circle(d=CASE_SCREW_HOLE_DIAM, $fn=64);
             // Case screws should fall through this hole:
             translate([10.0, 0.0])
-                circle(d=CASE_SCREW_HEAD_HOLE_DIAM, $fn=32);
+                circle(d=CASE_SCREW_HEAD_HOLE_DIAM, $fn=64);
             // PCB screws should screw into plastic here:
             translate([20.0, 0.0])
-                circle(d=PCB_SCREW_DIAM, $fn=32);
+                circle(d=PCB_SCREW_DIAM, $fn=64);
         }
     }
 }

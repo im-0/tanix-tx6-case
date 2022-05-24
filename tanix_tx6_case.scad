@@ -83,6 +83,8 @@ OA = 0.01;  // mm
 
 module case_2d_projection(wall_adj)
 {
+    // TODO: Wall should be thicker:
+    // diam = CASE_WIDTH - CASE_STRAIGHT_WIDTH + wall_adj * 2;
     diam = CASE_WIDTH - CASE_STRAIGHT_WIDTH + wall_adj;
     off = CASE_STRAIGHT_WIDTH / 2.0;
     hull() {

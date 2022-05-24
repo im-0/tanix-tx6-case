@@ -108,6 +108,11 @@ module bottom_supports_2d(r, wall_adj)
     }
 }
 
+function pcb_support_coords() = let(half_off = PCB_SUPPORT_DIST / 2) [
+	for (x_off = [-1.0, 1.0], y_off = [-1.0, 1.0])
+		[x_off * half_off, y_off * half_off, 0.0]
+];
+
 module top_part_no_holes()
 {
     // Box.
@@ -129,14 +134,9 @@ module top_part_no_holes()
     // PCB supports.
     translate([0.0, 0.0, WALL_THICKNESS - OA]) {
         linear_extrude(height=PCB_SUPPORT_HEIGHT + OA) {
-            off = PCB_SUPPORT_DIST / 2.0;
-            for (x_off = [-1.0, 1.0], y_off = [-1.0, 1.0]) {
-                translate([x_off, y_off] * off) {
-                    difference() {
-                        circle(d=PCB_SUPPORT_DIAM, $fn=64);
-                        circle(d=PCB_SCREW_DIAM + TOLERANCE * 2.0, $fn=64);
-                    }
-                }
+            for (xy = pcb_support_coords()) {
+                translate(xy)
+                    circle(d=PCB_SUPPORT_DIAM, $fn=64);
             }
         }
     }
@@ -235,6 +235,16 @@ module top_part()
             translate([-CASE_WIDTH / 2.0, 0.0, -OS]) {
                 linear_extrude(height=CASE_WIDTH)
                     right_ports_2d();
+            }
+        }
+
+        // Holes for PCB screws.
+        translate([0.0, 0.0, WALL_THICKNESS / 2]) {
+            linear_extrude(height=PCB_SUPPORT_HEIGHT + WALL_THICKNESS / 2 + OA) {
+                for (xy = pcb_support_coords()) {
+                    translate(xy)
+                        circle(d=PCB_SCREW_DIAM, $fn=64);
+                }
             }
         }
 

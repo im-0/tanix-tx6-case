@@ -145,35 +145,35 @@ module top_part_no_holes()
 module front_ports_2d() {
     // Power connector.
     translate([15.0, 13.5])
-        circle(d=6, $fn=64);
+        circle(d=6.5, $fn=64);
     // HDMI connector.
-    translate([22.0, 6.0])
-        square([16.0, 7.0]);
+    translate([22.0, 7.0])
+        square([17.0, 7.0]);
     // Ethernet connector.
-    translate([43.0, 3.5])
-        square([15.0, 11.0]);
+    translate([43.0, 4.5])
+        square([16.0, 11.0]);
     // Two USB 2.0 connectors.
     translate([64.0, 3.5])
         square([15.0, 16.0]);
     // Reset button.
-    translate([80.5, 9.3])
-        circle(d=2.0, $fn=32);
+    translate([81.0, 9.3])
+        circle(d=1.5, $fn=32);
     // SPDIF connector.
-    translate([86.5, 9.0])
-        circle(d=5.0, $fn=64);
+    translate([87.0, 9.5])
+        circle(d=5.5, $fn=64);
 }
 
 module left_ports_2d()
 {
     // USB 3.0 connector.
-    translate([58.5, 7.0])
-        square([15.0, 7.0]);
+    translate([58.5, 7.5])
+        square([15.5, 7.5]);
     // WiFi connector.
     translate([83.5, 13.0]) {
         intersection() {
-            translate([0.0, -1.0])
+            translate([0.0, -1.2])
                 square(8.0, true);
-            circle(d=7.0, $fn=64);
+            circle(d=6.5, $fn=64);
         }
     }
 }

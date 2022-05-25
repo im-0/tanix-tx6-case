@@ -220,6 +220,9 @@ module left_ports_2d(through_hole)
                 circle(d = 6.5, $fn = 64);
             }
         }
+    } else {
+        translate([83.5, 13.0])
+            circle(d = 11.5, $fn = 64);
     }
 }
 

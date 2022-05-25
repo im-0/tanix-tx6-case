@@ -190,7 +190,7 @@ module front_ports_2d(through_hole) {
         square([15.0 + adj2, 7.0 + adj2]);
     // Button.
     if (through_hole) {
-        translate([81.0, 9.3])
+        translate([81.0, 9.8])
             circle(d = 1.5, $fn = 32);
     }
     // SPDIF connector.
@@ -230,7 +230,7 @@ module right_ports_2d(through_hole)
 
     // Button.
     if (through_hole) {
-        translate([26.5, 9.3])
+        translate([26.5, 9.8])
             circle(d = 1.5, $fn = 32);
     }
     // MicroSD card slot.

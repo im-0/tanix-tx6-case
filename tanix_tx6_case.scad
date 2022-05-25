@@ -63,6 +63,8 @@ WALL_THICKNESS = 2.5;  // mm
 
 // Size of supports inside the top part
 BOTTOM_SUPPORT_RADIUS = 7.0;  // mm
+// Width of bottom supports on the walls
+BOTTOM_SUPPORT_WALL_WIDTH = 2.0;  // mm
 // Size of thick supports inside the top part
 BOTTOM_SUPPORT_THICK_RADIUS = 8.5;  // mm
 BOTTOM_SUPPORT_THICKENING_HEIGHT = 5.0;  // mm
@@ -126,9 +128,26 @@ module top_part_no_holes()
         linear_extrude(height=CASE_TOP_HEIGHT + CASE_BOTTOM_HEIGHT)
             case_2d_projection(0.0);
 
+        straight_h = (CASE_TOP_HEIGHT - WALL_THICKNESS) / 2;
         translate([0.0, 0.0, WALL_THICKNESS])
-            linear_extrude(height=CASE_TOP_HEIGHT + CASE_BOTTOM_HEIGHT - WALL_THICKNESS + OS)
-                case_2d_projection(-WALL_THICKNESS);
+            linear_extrude(straight_h + OA)
+                case_2d_projection(- WALL_THICKNESS);
+
+        // More supports for bottom.
+        hull() {
+            translate([0.0, 0.0, WALL_THICKNESS + straight_h])
+                linear_extrude(OA)
+                    case_2d_projection(- WALL_THICKNESS);
+            // Not that accurate because of (+ OS), but good enough.
+            translate([0.0, 0.0, CASE_TOP_HEIGHT + OS])
+                linear_extrude(OA)
+                    case_2d_projection(- WALL_THICKNESS - BOTTOM_SUPPORT_WALL_WIDTH);
+        }
+
+        // Some space for bottom part.
+        translate([0.0, 0.0, CASE_TOP_HEIGHT])
+            linear_extrude(CASE_BOTTOM_HEIGHT + OS)
+                case_2d_projection(- WALL_THICKNESS);
     }
 
     // Bottom supports.
@@ -258,7 +277,7 @@ module top_grill(h, n_vert)
                     translate([
                             ih * TOP_GRILL_HOLE_WIDTH * 2 - grill_width / 2,
                             -CASE_WIDTH / 2 - OS])
-                        square([TOP_GRILL_HOLE_WIDTH, WALL_THICKNESS + OS * 2]);
+                        square([TOP_GRILL_HOLE_WIDTH, WALL_THICKNESS + BOTTOM_SUPPORT_WALL_WIDTH + OS * 2]);
                 }
             }
         }
@@ -326,13 +345,13 @@ module top_part()
         for (a = [-90.0, 0.0, 90.0]) {
             translate([0.0, 0.0, WALL_THICKNESS + CASE_TOP_HEIGHT - grill_h]) {
                 rotate([0.0, 0.0, a])
-                    top_grill(grill_h - WALL_THICKNESS, 2);
+                    top_grill(grill_h - WALL_THICKNESS + OA, 2);
             }
         }
         // Airflow grill - back.
         translate([0.0, 0.0, WALL_THICKNESS]) {
             rotate([0.0, 0.0, 180.0])
-                top_grill(CASE_TOP_HEIGHT - WALL_THICKNESS, 3);
+                top_grill(CASE_TOP_HEIGHT - WALL_THICKNESS + OA, 3);
         }
     }
 }
